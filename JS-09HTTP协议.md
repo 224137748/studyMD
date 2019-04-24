@@ -50,16 +50,45 @@ http协议就是约束客户端，与服务器之间进行传递的数据格式:
 
   （浏览器客户端过几秒钟之后自动跳转）
 
-- 常见的状态码
+```js
 
-  200  ok
+      var xml = new XMLHttpRequest();
+      // get 请求
+      xml.open('GET', `/api/getUserInfor?id=****`);
+      xml.send(null);
+      // post 请求
+      // xml.open('POST', '/api/getUserInfor);
+      // xml.send('id=****');
+      
+      // 判断xml readyState状态码
 
-   403  没有权限访问
+      if (xml.readyState === 4 && xml.status === 200) {
 
-   404  请求的资源没有找到 
+         callback();
+      }
+```
+- xml readyState状态码
+   - 0－未初始化，即尚未调用 open。
+   - 1－初始化，即尚未调用 send。
+   - 2－发送数据，即已经调用 send。
+   - 3－数据传送中。
+   - 4－完成。
+- xml status 常见的状态码
 
-  304  后端的文件的没有任何的改变 
+  - 1xx  该类状态代码用于表示临时回应。
 
-  302  重定向 
+  - 200  请求成功！
 
-  500  服务器内部错误.
+  - 3xx 该类状态码表示用户代理要想完成请求，还需要发出进一步的操作。
+
+  - 304  后端的文件的没有任何的改变 
+
+  - 302  重定向 
+
+  - 4xx 客户端错误
+
+  - 403  没有权限访问
+
+  - 404  请求的资源没有找到 
+
+  - 500  服务器内部错误.
