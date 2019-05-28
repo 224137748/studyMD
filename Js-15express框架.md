@@ -128,8 +128,85 @@ res.sendStatus();
 
 - 安装 `express-art-template art-template`依赖
 - app.js 中配置
+
   - 注册一个模板引擎
     - `app.engine(.html'后缀名', express-art-template);`
     - 设置默认渲染引擎`app.set('view engine', '.html');`
   - 使用 `res.render(文件名， 数据对象)`
   - express 这套使用，默认在当前 app.js 同级的 views 目录查找
+
+### 内置中间件（处理静态资源）
+
+- 1、创建对象 `let static = express.static('./public');`
+
+- 2、配置搭配中间件中`app.use(static);`
+
+- 3、匹配指定路径的中间件`app.use('/public, static);`
+
+### 第三方中间件（post 请求体的获取）
+
+- 原生的：`req.on('data', data => { datat.toString();})`
+
+```javascript
+const bodyParser = require("body-parser");
+// 解析键值对application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// 不用扩展的库来解析键值对，而是用node内置核心对象queryString来解析键值对
+
+// 解析application/json
+app.use(bodyParser.json());
+```
+
+### 服务端处理错误和 404 页面找不到
+
+- 404 页面响应 `router.all('*', () => { ... })`
+
+```javascript
+// 当用户访问/xxx/xxx路径时
+// 页面显示：Cannot GET /dsada
+
+// 注意：定义在最后一条路由
+router.all("*", (req, res) => {
+  res.send("地址错误，您去首页吧");
+});
+```
+
+- 触发错误
+
+  - `next(err)`
+
+  ```javascript
+  router.get("/", (req, res) => {
+    let textPath = "./a/read.text";
+    try {
+      fs.readFileSync(textPath);
+      res.render("index.html");
+    } catch (err) {
+      // throw err;
+      next(err);
+    }
+  });
+  ```
+
+  - 处理错误，`app.use((err, req, res, next) => {})`
+
+  ```javascript
+  // 在服务最后定义，处理错误（参数位置错误优先）-> 优雅的用户体验
+  app.use((err, req, res, next) => {
+    res.send(
+      '<h1>亲爱的用户，您访问的页面似乎丢失了，去<a href="/">首页</>看看</h1>'
+    );
+  });
+  ```
+
+### nodemon、pm2
+
+- 修改代码自动重启
+- 安装全局命令行工具 `npm i -g nodemon`
+- 进入到指定目录命令行 `nodemon ./xxx.js`
+- 手动触发重启，在命令行输入 `rs` 回车
+
+---
+
+学习到 31 分钟
