@@ -174,10 +174,10 @@ router.all("*", (req, res) => {
 
 - 触发错误
 
-  - `next(err)`
+  - `next(err)`将错误作为参数往后执行传递
 
   ```javascript
-  router.get("/", (req, res) => {
+  router.get("/", (req, res, next) => {
     let textPath = "./a/read.text";
     try {
       fs.readFileSync(textPath);
