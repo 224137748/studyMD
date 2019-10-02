@@ -61,4 +61,22 @@
   }
   ```
 
-  
+#### 4、loader
+
+​	`webpack`默认只会打包`js`文件，对其他类型的文件（图片，css样式文件），需要第三方的插件进行加载；
+
+```js
+module.exports = {
+    // 模块
+    module: {
+        rules: [{
+            test: /\.(png|jpg|gif)$/,
+            use: {
+                loader: 'file-loader',
+                option: {}
+            }
+        }]
+    }
+}
+```
+
