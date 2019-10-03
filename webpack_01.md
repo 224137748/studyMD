@@ -63,20 +63,152 @@
 
 #### 4、loader
 
-​	`webpack`默认只会打包`js`文件，对其他类型的文件（图片，css样式文件），需要第三方的插件进行加载；
++ **插件执行顺序： 从下到上，从右到左**
 
-```js
-module.exports = {
-    // 模块
++ **图片资源**`：webpack`默认只会打包`js`文件，对其他类型的文件（图片，css样式文件），需要第三方的插件进行加载；
+
+  - `file-loader`
+
+    ```js
+    module.exports = {
+        // 模块
+        module: {
+            rules: [{
+                test: /\.(png|jpg|gif)$/,
+                use: {
+                    loader: 'file-loader',
+                    option: {
+                        // placeholders占位符，修改打包后的文件名
+                        name: '[name].[ext]',
+                        // 打包图片到指定文件夹
+                        outputPath: 'images/'
+                    }
+                }
+            }]
+        }
+    }
+    ```
+
+  + `url-loader`,功能与`file-loader`类似	 
+
+    ```js
     module: {
         rules: [{
             test: /\.(png|jpg|gif)$/,
             use: {
-                loader: 'file-loader',
-                option: {}
+                loader: 'url-loader',
+                option: {
+                    // placeholders占位符，修改打包后的文件名
+                    name: '[name].[ext]',
+                    // 打包图片到指定文件夹
+                    outputPath: 'images/',
+                    // 小于200k的图片将会被压缩
+                    limit: 204800
+                }
             }
         }]
     }
-}
-```
+    ```
 
++ **`Css样式`**：
+
+  `css-loader`：处理`css`样式文件
+
+  `style-loader`：在`js`文件中引用`css`资源时，将`css`资源挂在到页面中。
+
+  `scss-loader`：对于`css`预处理器的使用。
+
+  `postcss-loader`：对新增的`css3`样式代码，添加浏览器前缀；注意：`postcss-loader`需要单独新增一个配置文件`postcss.config.js`配置所需的插件；
+
+  **示例：**
+
+  ```
+  module.exports = {
+      module: {
+          rules: [{
+              test: /\.（css|scss）$/,
+              // 插件执行顺序： 从下到上，从右到左
+              use: [
+              	'style-loader', 
+              	'css-loader', 
+              	'scss-loader', 
+              	'postcss-loader'
+              ];
+          }]
+      }
+  }
+  ```
+
++ **`Css-loader`样式补充**
+
+  + 在`.scss`中引用其他`scss`文件，不经过`postcss-loader`、`scss-loader`处理的情况
+
+    ```js
+    module: {
+        rules: [{
+            test: /\.（css|scss）$/,
+            use: [
+                'style-loader', 
+                {
+                    loader: 'css-loader',
+                    options: {
+                    	importLoaders: 2	
+                    }
+                }, 
+                'scss-loader', 
+                'postcss-loader'
+            ];
+        }]
+    }
+    ```
+
+  + `css`样式模块化，类似于`scoped`区间样式，不会和其他模块的样式重叠和干扰。
+
+    **1、配置：**
+
+    ```js
+    module: {
+        rules: [{
+            test: /\.（css|scss）$/,
+            use: [
+                'style-loader', 
+                {
+                    loader: 'css-loader',
+                    options: {
+                    	importLoaders: 2,
+                        modules: true
+                    }
+                }, 
+                'scss-loader', 
+                'postcss-loader'
+            ];
+        }]
+    }
+    ```
+
+    **2、使用：**
+
+    ```js
+    import avatar from './avatar.jpg';
+    import style from './index.scss';
+    
+    var img = new Image();
+    img.src = avatar;
+    
+    // 增加avatar的类名，此时，这个style中的.avatar样式只作用于当前的图片
+    img.className.add(style.avatar);
+    
+    var root = document.getElementById('root');
+    root.append(img);	
+    ```
+
+  + **`css`字体打包**
+
+    ```
+    rules: [{
+        test: /\.(ttf|svg|eot)$/,
+        use: 'file-loader'
+    }]
+    ```
+
+    
