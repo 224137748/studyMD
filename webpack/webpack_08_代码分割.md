@@ -32,7 +32,7 @@ module.export = {
 // index.js
 function getComponent() {
     // 引入时定义打包后代码块名字
-    return import(/* webpackChunkName: 'lodash' */ 'lodash').then({default: _} => {
+    return import(/* webpackChunkName: 'lodash' */ 'lodash').then(({default: _}) => {
         var element = document.createElement('div');
         element.innerHTML = _.join('lee', 'Sen', '-');
         return element;
