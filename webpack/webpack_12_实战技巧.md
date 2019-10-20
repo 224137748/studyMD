@@ -113,7 +113,7 @@ npm install lodash @types/lodash --save
   }
   ```
 
-  在` webpack.config.js`文件中配置代理：
+  在` webpack.config.js`文件中配置代理，对于`https`的请求要增加`secure`属性：
 
   ```js
   module.exports = {
@@ -125,8 +125,10 @@ npm install lodash @types/lodash --save
           hot: true,
           proxy: {
               '/react/api': {
-                  target: 'http://www.dell-lee.com'
-              }
+                  target: 'http://www.dell-lee.com',
+                  // secure: false 对于https请求要配置该项
+              },
+              changeOrigin: true	
           }
       }
   }
@@ -154,4 +156,9 @@ npm install lodash @types/lodash --save
   }
   ```
 
++ 更多详情配置查看[`devServer.proxy`][2]
+
+  [2]: https://www.webpackjs.com/configuration/dev-server/#devserver-proxy	"devServer.proxy"
+
   
+
