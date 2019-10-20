@@ -6,7 +6,15 @@
 
 ```js
 // webpack.config.js
-  
+const path = require('path');
+module.exports = {
+    output: {
+        path: path.resolve(__dirname: 'dist'),
+        filename: 'library.js',
+        library: 'root',	// 将该库挂在到全局变量root上
+        libraryTarget: 'umd'	// 将该库封装成适用AMD CMD 各个平台
+    }
+}
 
 ```
 
@@ -160,5 +168,27 @@ npm install lodash @types/lodash --save
 
   [2]: https://www.webpackjs.com/configuration/dev-server/#devserver-proxy	"devServer.proxy"
 
-  
+#### 7、单页应用 & 非history模式下的路由问题
+
+​	在`SPA`页面中中，常常使用到路由，有的框架默认使用路由采用的时`history`模式，这种模式通常叫做`hash`路由，以`#`号加上路由路径表示，例如：`/app/v3/lite/#/vrbt`、`/app/v3/lite/#/crbt`等；
+
+​	这种路由模式以`#`号加上路由路径这种表现形式不太美观，我们想取消掉中间的`#`号，在地址栏输入`/app/v3/lite/vrbt `，就跳转到我们希望看到的页面。但是实际上浏览器会报错，提示网页未找到，那是因为浏览器会到服务器中的路径下寻找资源，服务器中根本没有这个文件，对此我们还需要在`webpack.config.js`中做以下配置：
+
+```js
+// webpack.config.js
+module.exports = {
+    devServer: {
+        historyApiFallback: true	
+        //等同于
+        // historyApiFallback: {
+        //    rewrites: [{
+        //    	form: /\.*/,   将所有路径映射到当前根目录下的index.html
+        //		to: '/index.html'
+        //	}]
+    	// }
+    }
+}
+```
+
+**以上配置仅仅只作为本地开发有效，线上还需要后端配置`apach`设置映射关系，所以还是推荐使用默认的history模式**
 
