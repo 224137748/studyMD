@@ -1,4 +1,4 @@
-## webapck 12 实战技巧
+## webapck 13 实战技巧
 
 #### 1、库 & 组件的打包
 
@@ -192,3 +192,44 @@ module.exports = {
 
 **以上配置仅仅只作为本地开发有效，线上还需要后端配置`apach`设置映射关系，所以还是推荐使用默认的history模式**
 
+#### 8、webpack 配置Eslint
+
+​	有同学会有疑问，为什么要在`webpack`中配置`eslint`呢？经常使用的代码编辑器中就有`eslint`插件(sublime无法安装此插件)，使用起来也很方便，但如果是团队协同开发的项目，想统一`eslint`标准，以及代码风格，岂不是每个开发人员的`eslint`配置项都要设置成一致？所以`webpack`中配置`eslint`就能有效的解决这个问题。
+
++ 安装`eslint`：
+
+  ```js
+  npm install eslint --save-dev
+  ```
+
++ 在项目文件夹下本地检测：
+
+  ```js
+  // 检测src目录下的文件，此方法开发效率较慢
+  npx eslint src
+  ```
+
++ 在开发中使用，配置`devServer`和`js-loader`等参数。
+
+  ```js
+  // 配置webpack.config.js
+  module.exports = {
+      devServer: {
+          overlay: true,	// 开发时，在浏览器实时展示eslint错误信息
+          contentBase: './dist',
+          open: true,
+          port: 8080,
+          hot: true,
+          hotOnly: true
+      }
+      module: {
+          rules: [{
+              test: /\.js$/,
+              exclude: /node_modules/,
+              use: ['babel-loader', 'eslint-loader']	// js文件先经过eslint-loader检查，在经过babel转译
+          }]
+      }
+  };
+  ```
+
+  
