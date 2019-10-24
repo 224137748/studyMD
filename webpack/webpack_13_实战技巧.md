@@ -198,13 +198,13 @@ module.exports = {
 
 + 安装`eslint`：
 
-  ```js
+  ```bash
   npm install eslint --save-dev
   ```
 
 + 在项目文件夹下本地检测：
 
-  ```js
+  ```bash
   // 检测src目录下的文件，此方法开发效率较慢
   npx eslint src
   ```
@@ -233,3 +233,4 @@ module.exports = {
   ```
 
   
+

@@ -108,7 +108,7 @@ modle.exports = {
                 filePath: path.resolve(__dirname, '../dll/vendors.dll.js')
             }),
             // (2)查找文件的映射关系，如果dll文件中有需要的第三方库，则直接引用，否则去node_modules中查找，走打包流程
-            new webpack.DllRefrencePlugin({
+            new webpack.DllReferencePlugin({
                 manifest: path.resolve(__dirname, '../dll/vendors.manifest.json')
             })
         ]	
@@ -117,3 +117,101 @@ modle.exports = {
     ```
 
      
+
++ **========优化=========优化===========优化===========优化======**
+
+  上面的示例`entry`中只有一个入口，
+
+  ```js
+  module.exports = {
+      entry: {
+          vendors: ['react', 'react-dom', 'lodash']
+      }
+  }
+  ```
+
+  如果有多个入口怎么操作？想看看下面这种情况：
+
+  ```js
+  
+  // webpack.dll.js 中配置多个入口
+  module.exports = {
+      entry: {
+          vendors: ['lodash'],
+          react: ['react', 'react-dom'],
+          jquery: ['jquery']
+      }，
+      output: {
+          filename: '[name].dll.js',	// 定义第三方库的名称
+          path: path.resolve(__dirname, '../dll'),
+          library: '[name]'	// 将第三方库挂载到全局变量vendors下
+      },
+  }
+  ```
+
+  执行以下命令：
+
+  ```bash
+  npm run build:dll
+  ```
+
+  会在`dll`文件夹中生成`vendors.dll.js`、`react.dll.js`、`jquery.dll.js`、`vendors.manifest.json`、`react.manifest.json`、`jquery.manifest.json`等文件，然后我们还要到`webpack.config.js`中将生成的文件注入到`index.html`中，并且配置依赖关系：
+
+  ```js
+  module.epxorts = {
+      plugins: [
+          new AddAssetHtmlWebpackPlugin({
+              // ...vendors.dill.js
+          })，
+          new webpack.DllReferencePlugin({
+          	// ...vendors.manifest.json
+          }),
+          new AddAssetHtmlWebpackPlugin({
+              // ...react.dill.js
+          })，
+          new webpack.DllReferencePlugin({
+          	// ...react.manifest.json
+          }),
+          new AddAssetHtmlWebpackPlugin({
+              // ...jquery.dill.js
+          })，
+          new webpack.DllReferencePlugin({
+          	// ...jquery.manifest.json
+          })
+      ]
+  }
+  ```
+
+  ok，看到这里我想大家应该都知道了这样显然很不优雅，每新增一个入口文件，就要手动到`webpack.config.js`中配置两个插件，所以我们希望`node`帮助我们自动的添加插件。
+
+  **解决办法：**
+
+  ```js
+  const fs = require('fs');
+  const path = require('path');
+  // files 为dll文件夹下面的所有文件的名称组成的数组
+  const plugins = [];
+  const files = fs.readdirSync(path.resolve(__dirname, '../dll'));
+  files.forEach((file) => {
+      if (/.*\.dll.js/.test(file)) {
+          plugins.push(new AddAssetHtmlWebpackPlugin({
+              filepath: path.resolve(__dirname, '../dll', file)
+          }))
+      }
+      if (/.*\.manifest.json/.test(file)) {
+          plugins.push(new webpack.DllReferencePlugin({
+              manifest: path.resolve(__dirname, '../dll', file)
+          }))
+      }
+  })
+  ```
+
+#### 6、控制包文件大小
+
+#### 7、thread-loader,parallel-webpack,happaypack进行多进程打包
+
+#### 8、合理使用 sourceMap
+
+#### 9、结合 stats 分析打包结果
+
+#### 10、开发环境无用插件剔除
