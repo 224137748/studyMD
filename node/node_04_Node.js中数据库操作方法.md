@@ -1,4 +1,4 @@
-## node 04 数据库操作方法
+## node 04 Node.js中数据库操作方法
 
 #### 引入数据
 
@@ -47,6 +47,45 @@ app.listen('8080', () => {
     console.log('server has started at http://localhost:8080');
 })
 ```
+
+#### 创建数据库
+
++ 创建数据库
+
+  要在 MongoDB 中创建一个数据库，首先我们需要创建一个 MongoClient 对象，然后配置好指定的 URL 和 端口号。
+
+  **如果数据库不存在，MongoDB 将创建数据库并建立连接**
+
+  ```js
+  var MongoClient = require('mongodb').MongoClient;
+  var url = "mongodb://localhost:27017/runoob";
+   
+  MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+    if (err) throw err;
+    console.log("数据库已创建!");
+    db.close();
+  });
+  ```
+
++ 创建集合
+
+  ```js
+  var MongoClient = require('mongodb').MongoClient;
+  var url = 'mongodb://localhost:27017/runoob';
+  MongoClient.connect(url, { useNewUrlParser: true }, function (err, db) {
+      if (err) throw err;
+      console.log('数据库已创建');
+      // 这里可以选择 要创建集合的数据库，当前选择为runoob
+      var dbase = db.db("runoob");
+      dbase.createCollection('site', function (err, res) {
+          if (err) throw err;
+          console.log("创建集合!");
+          db.close();
+      });
+  });
+  ```
+
+  
 
 #### 插入数据库
 

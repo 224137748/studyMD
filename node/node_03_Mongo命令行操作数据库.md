@@ -1,4 +1,4 @@
-## node 03 Mongodb
+## node 03 Mongo命令行操作数据库
 
 #### 介绍
 
@@ -257,4 +257,44 @@
   db.col.find({"title": {$type: 'string'}})
   ```
 
-  
++ **分页查询**
+
+  + `.limit(num)`： 查询几条数据
+  + `.skip(num)`：略过几条数据
+
+  ```bash
+  # 查找第一页 1-10条数据
+  db.col.find().limit(10)
+  # 查找第二页 11-20条数据
+  db.col.find().limit(10).skip(10)
+  ```
+
++ **获取集合信息**
+
+  + 命令：`db.col.stats()`
+
+  + 查询有多少条数据：`db.col.stats().count`
+
+  + `count`表示当前集合有多少条数据，`size`标是当前集合大小.....
+
+    ```js
+    MongoDB Enterprise > db.site.stats()
+    {
+            "ns" : "local.site",
+            "size" : 192,
+            "count" : 4,
+            "avgObjSize" : 48,
+            "storageSize" : 20480,
+            "capped" : false,
+            "wiredTiger" : {
+                    "metadata" : {
+                            "formatVersion" : 1
+                    }
+                    // .....
+            }
+            // ....
+    }               
+    ```
+
+    
+
