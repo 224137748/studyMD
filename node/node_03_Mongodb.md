@@ -176,7 +176,7 @@
   db.collectionName.find()
   ```
 
-  除了 find() 方法之外，还有一个 **`findOne() `**方法，它只返回一个文档。
+  除了 find() 方法之外，还有一个 **`findOne() `**方法，*它只返回一个文档。*
 
   + **AND条件查找**
 
